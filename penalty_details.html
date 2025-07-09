@@ -1,63 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Traffic Penalty Details</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Penalty Details</title>
   <style>
-    body { background-color: #f8f9fa; }
-    .card { border-radius: 12px; }
-    .btn + .btn { margin-left: 10px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+      background-color: #f4f6fa;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 550px;
+      margin: auto;
+    }
+    .heading {
+      font-size: 22px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .info {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .upi-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    .upi-btn:hover {
+      background-color: #1e7e34;
+    }
+    .media {
+      margin-top: 15px;
+    }
+    video, img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 5px;
+      margin-top: 20px;
+      white-space: pre-line;
+    }
+    .final-message {
+      background-color: #e9f7ef;
+      color: #155724;
+      padding: 12px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 15px;
+      white-space: pre-line;
+    }
   </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <div class="card shadow p-4">
-      <h4>Hello Mr/Mrs <strong id="owner_name">Loading...</strong></h4>
-      <p><strong>Complaint ID:</strong> <span id="cid"></span></p>
-      <p><strong>Date & Time:</strong> <span id="date_time"></span></p>
-      <p><strong>Violation:</strong> <span id="violation_type"></span></p>
-      <p><strong>Description:</strong><br><span id="comment"></span></p>
 
-      <div class="mt-3">
-        <a id="downloadLink" href="#" class="btn btn-primary" download>
-          ⬇️ Download Proof File
-        </a>
-      </div>
+<div class="card">
+  <div class="heading">Hello Mr/Mrs <span id="name"></span></div>
+  <div class="info"><strong>Complaint ID:</strong> <span id="cid"></span></div>
+  <div class="info"><strong>Date & Time:</strong> <span id="date"></span></div>
+  <div class="info"><strong>Violation:</strong> <span id="type"></span></div>
+  <div class="info"><strong>Penalty:</strong> ₹<span id="amount"></span></div>
+  <div class="info"><strong>Description:</strong> <span id="comment"></span></div>
 
-      <div class="mt-4">
-        <p><strong>To pay your penalty, click below:</strong></p>
-        <a id="upiLink" href="#" class="btn btn-success">
-          💳 Pay via UPI
-        </a>
-      </div>
-    </div>
-  </div>
+  <div class="media" id="mediaPreview"></div>
 
-  <script>
-    // Get query parameters from URL
-    const urlParams = new URLSearchParams(window.location.search);
+  <div class="warning" id="warningBox"></div>
 
-    const cid = urlParams.get('cid') || 'CID0001';
-    const name = urlParams.get('name') || 'Citizen';
-    const amount = urlParams.get('amount') || '500';
-    const type = urlParams.get('type') || 'No Helmet';
-    const date = urlParams.get('date') || 'N/A';
-    const comment = urlParams.get('comment') || 'No comment provided.';
-    const file = `${type.replace(/\s+/g, '_')}_${cid}.jpg`;
+  <div class="info" style="margin-top: 15px;">To pay your penalty, click below:</div>
+  <a id="upiLink" class="upi-btn" href="#" target="_blank">🇮🇳 Pay via UPI</a>
 
-    // Fill dynamic content
-    document.getElementById('owner_name').textContent = name;
-    document.getElementById('cid').textContent = cid;
-    document.getElementById('date_time').textContent = date;
-    document.getElementById('violation_type').textContent = `${type} - ₹${amount}`;
-    document.getElementById('comment').textContent = comment;
+  <div class="final-message" id="finalMessageBox"></div>
+</div>
 
-    // Download link (you must put the files in "uploads" folder)
-    document.getElementById('downloadLink').href = `./uploads/${file}`;
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const cid = params.get('cid') || 'N/A';
+  const name = decodeURIComponent(params.get('name') || 'N/A');
+  const type = decodeURIComponent(params.get('type') || 'N/A');
+  const amount = params.get('amount') || 'N/A';
+  const date = decodeURIComponent(params.get('date') || 'N/A');
+  const comment = decodeURIComponent(params.get('comment') || 'N/A');
+  const mediaFile = decodeURIComponent(params.get('media') || '');
 
-    // UPI payment link
-    document.getElementById('upiLink').href = `upi://pay?pa=trafficdept@upi&am=${amount}`;
-  </script>
+  // Set text in HTML
+  document.getElementById('cid').textContent = cid;
+  document.getElementById('name').textContent = name;
+  document.getElementById('type').textContent = type;
+  document.getElementById('amount').textContent = amount;
+  document.getElementById('date').textContent = date;
+  document.getElementById('comment').textContent = comment;
+
+  // UPI link
+  const upiLink = `upi://pay?pa=trafficdept@upi&am=${amount}&cu=INR&tn=Penalty for ${type}`;
+  document.getElementById('upiLink').href = upiLink;
+
+  // Friendly warning
+  const warningMessage = `⚠️ Kindly note that a traffic rule has been violated.\nWe urge you to follow safety guidelines at all times.\nYour cooperation helps us build safer roads for everyone.\nThis serves as your first friendly warning.`;
+  document.getElementById('warningBox').textContent = warningMessage;
+
+  // Media Preview
+  const ext = mediaFile.split('.').pop().toLowerCase();
+  const mediaContainer = document.getElementById('mediaPreview');
+  if (mediaFile) {
+    if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+      mediaContainer.innerHTML = `<strong>Proof:</strong><br><img src="uploads/${mediaFile}" alt="Proof Image">`;
+    } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
+      mediaContainer.innerHTML = `<strong>Proof:</strong><br><video controls><source src="uploads/${mediaFile}" type="video/${ext}">Your browser does not support video.</video>`;
+    } else {
+      mediaContainer.innerHTML = `<strong>Proof:</strong><br><p>Cannot preview this file type.</p>`;
+    }
+  }
+
+  // Final message preview
+  const infoLink = window.location.href;
+  const fullMessage = `Mr/Mrs, you have violated traffic rules.\nTap to know more:\n${infoLink}`;
+  document.getElementById('finalMessageBox').textContent = fullMessage;
+</script>
+
 </body>
 </html>
