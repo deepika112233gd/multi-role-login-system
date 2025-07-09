@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 30px;
       background-color: #f4f6fa;
+      padding: 30px;
     }
     .card {
       background: white;
@@ -47,21 +47,10 @@
       border-radius: 10px;
       margin-top: 10px;
     }
-    .warning {
-      background-color: #fff3cd;
-      color: #856404;
-      padding: 12px;
-      border-radius: 5px;
-      margin-top: 20px;
-      white-space: pre-line;
-    }
-    .final-message {
-      background-color: #e9f7ef;
-      color: #155724;
-      padding: 12px;
-      border-radius: 5px;
-      margin-top: 20px;
+    .message {
       font-size: 15px;
+      color: #333;
+      margin-top: 20px;
       white-space: pre-line;
     }
   </style>
@@ -74,16 +63,13 @@
   <div class="info"><strong>Date & Time:</strong> <span id="date"></span></div>
   <div class="info"><strong>Violation:</strong> <span id="type"></span></div>
   <div class="info"><strong>Penalty:</strong> ₹<span id="amount"></span></div>
-  <div class="info"><strong>Description:</strong> <span id="comment"></span></div>
 
   <div class="media" id="mediaPreview"></div>
 
-  <div class="warning" id="warningBox"></div>
+  <p class="message" id="messageText"></p>
 
   <div class="info" style="margin-top: 15px;">To pay your penalty, click below:</div>
   <a id="upiLink" class="upi-btn" href="#" target="_blank">🇮🇳 Pay via UPI</a>
-
-  <div class="final-message" id="finalMessageBox"></div>
 </div>
 
 <script>
@@ -102,15 +88,17 @@
   document.getElementById('type').textContent = type;
   document.getElementById('amount').textContent = amount;
   document.getElementById('date').textContent = date;
-  document.getElementById('comment').textContent = comment;
 
   // UPI link
   const upiLink = `upi://pay?pa=trafficdept@upi&am=${amount}&cu=INR&tn=Penalty for ${type}`;
   document.getElementById('upiLink').href = upiLink;
 
-  // Friendly warning
-  const warningMessage = `⚠️ Kindly note that a traffic rule has been violated.\nWe urge you to follow safety guidelines at all times.\nYour cooperation helps us build safer roads for everyone.\nThis serves as your first friendly warning.`;
-  document.getElementById('warningBox').textContent = warningMessage;
+  // Friendly normal message
+// Friendly normal message
+const Message = `Dear violator,\nIt has been observed that you have violated a traffic rule.\nKindly note that traffic safety is important for everyone.\nWe urge you to follow safety guidelines at all times.\nYour cooperation helps us build safer roads for everyone.\nThis serves as your first friendly warning.\n\n\n\n\ Please pay the fine at the earliest.`;
+document.getElementById('messageText').textContent = Message;
+
+  document.getElementById('messageText').textContent = Message;
 
   // Media Preview
   const ext = mediaFile.split('.').pop().toLowerCase();
@@ -124,11 +112,6 @@
       mediaContainer.innerHTML = `<strong>Proof:</strong><br><p>Cannot preview this file type.</p>`;
     }
   }
-
-  // Final message preview
-  const infoLink = window.location.href;
-  const fullMessage = `Mr/Mrs, you have violated traffic rules.\nTap to know more:\n${infoLink}`;
-  document.getElementById('finalMessageBox').textContent = fullMessage;
 </script>
 
 </body>
