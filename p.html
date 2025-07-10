@@ -6,116 +6,85 @@
   <title>Penalty Details</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6fa;
+      font-family: Arial, sans-serif;
       padding: 30px;
+      background: #f0f2f5;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
     }
     .card {
       background: white;
-      border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      max-width: 550px;
-      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .heading {
-      font-size: 22px;
-      margin-bottom: 15px;
-      font-weight: bold;
+    h2 {
+      color: #2c3e50;
     }
-    .info {
-      margin-bottom: 10px;
+    p {
       font-size: 16px;
+      margin-bottom: 8px;
+    }
+    span {
+      font-weight: bold;
+      color: #000;
     }
     .upi-btn {
-      margin-top: 15px;
-      padding: 10px 20px;
       background-color: #28a745;
       color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      display: inline-block;
-    }
-    .upi-btn:hover {
-      background-color: #1e7e34;
-    }
-    .media {
-      margin-top: 15px;
-    }
-    video, img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-    .message {
-      font-size: 15px;
-      color: #333;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
       margin-top: 20px;
-      white-space: pre-line;
     }
   </style>
 </head>
 <body>
+  <div class="card">
+    <h2>Hello Mr/Mrs <span id="name">N/A</span></h2>
+    <p><strong>Complaint ID:</strong> <span id="cid">N/A</span></p>
+    <p><strong>Date & Time:</strong> <span id="date">N/A</span></p>
+    <p><strong>Violation:</strong> <span id="type">N/A</span></p>
+    <p><strong>Penalty:</strong> ₹<span id="amount">N/A</span></p>
 
-<div class="card">
-  <div class="heading">Hello Mr/Mrs <span id="name"></span></div>
-  <div class="info"><strong>Complaint ID:</strong> <span id="cid"></span></div>
-  <div class="info"><strong>Date & Time:</strong> <span id="date"></span></div>
-  <div class="info"><strong>Violation:</strong> <span id="type"></span></div>
-  <div class="info"><strong>Penalty:</strong> ₹<span id="amount"></span></div>
+    <p>Dear violator,<br>
+    It has been observed that you have violated a traffic rule.<br>
+    Kindly note that traffic safety is important for everyone.<br>
+    We urge you to follow safety guidelines at all times.<br>
+    This is your first friendly warning.</p>
 
-  <div class="media" id="mediaPreview"></div>
+    <p>Please pay the fine at the earliest.</p>
+    <button class="upi-btn" onclick="alert('Add real UPI link here')">🇮🇳 Pay via UPI</button>
+  </div>
 
-  <p class="message" id="messageText"></p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const cid = params.get("cid");
 
-  <div class="info" style="margin-top: 15px;">To pay your penalty, click below:</div>
-  <a id="upiLink" class="upi-btn" href="#" target="_blank">🇮🇳 Pay via UPI</a>
-</div>
-
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const cid = params.get('cid') || 'N/A';
-  const name = decodeURIComponent(params.get('name') || 'N/A');
-  const type = decodeURIComponent(params.get('type') || 'N/A');
-  const amount = params.get('amount') || 'N/A';
-  const date = decodeURIComponent(params.get('date') || 'N/A');
-  const comment = decodeURIComponent(params.get('comment') || 'N/A');
-  const mediaFile = decodeURIComponent(params.get('media') || '');
-
-  // Set text in HTML
-  document.getElementById('cid').textContent = cid;
-  document.getElementById('name').textContent = name;
-  document.getElementById('type').textContent = type;
-  document.getElementById('amount').textContent = amount;
-  document.getElementById('date').textContent = date;
-
-  // UPI link
-  const upiLink = `upi://pay?pa=trafficdept@upi&am=${amount}&cu=INR&tn=Penalty for ${type}`;
-  document.getElementById('upiLink').href = upiLink;
-
-  // Friendly normal message
-// Friendly normal message
-const Message = `Dear violator,\nIt has been observed that you have violated a traffic rule.\nKindly note that traffic safety is important for everyone.\nWe urge you to follow safety guidelines at all times.\nYour cooperation helps us build safer roads for everyone.\nThis serves as your first friendly warning.\n\n\n\n\ Please pay the fine at the earliest.`;
-document.getElementById('messageText').textContent = Message;
-
-  document.getElementById('messageText').textContent = Message;
-
-  // Media Preview
- // Media Preview (local file in uploads/)
-const ext = mediaFile.split('.').pop().toLowerCase();
-const mediaContainer = document.getElementById('mediaPreview');
-
-if (mediaFile && mediaFile !== 'N/A') {
-  if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
-    mediaContainer.innerHTML = `<strong>Proof:</strong><br><img src="uploads/${mediaFile}" alt="Proof Image">`;
-  } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
-    mediaContainer.innerHTML = `<strong>Proof:</strong><br><video controls><source src="uploads/${mediaFile}" type="video/${ext}">Your browser does not support video.</video>`;
-  } else {
-    mediaContainer.innerHTML = `<strong>Proof:</strong><br><p>Cannot preview this file type.</p>`;
-  }
-}
-
-</script>
-
+    if (cid) {
+      fetch(`https://yourdomain.com/get_penalty_info.php?cid=${encodeURIComponent(cid)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("cid").textContent = data.cid;
+            document.getElementById("name").textContent = data.owner;
+            document.getElementById("amount").textContent = data.amount;
+            document.getElementById("type").textContent = data.violation_type;
+            document.getElementById("date").textContent = data.date;
+          } else {
+            document.body.innerHTML = `<h2>❌ Penalty Not Found</h2><p>${data.message}</p>`;
+          }
+        })
+        .catch(err => {
+          document.body.innerHTML = `<h2>⚠️ Error</h2><p>Could not fetch penalty info.</p>`;
+          console.error(err);
+        });
+    } else {
+      document.body.innerHTML = "<h2>⚠️ CID Missing</h2><p>Please include ?cid=CID00001 in the URL.</p>";
+    }
+  </script>
 </body>
 </html>
