@@ -1,72 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Penalty Details</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 30px;
+      background: #f9f9f9;
+      padding: 40px;
       color: #333;
-      text-align: center;
     }
     .container {
       max-width: 500px;
       margin: auto;
       background: #fff;
-      padding: 25px;
-      border-radius: 12px;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+    }
+    h2 {
+      color: #d9534f;
+    }
+    .data-box {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .data-box p {
+      margin: 10px 0;
+      font-size: 16px;
     }
     .error {
       color: red;
-      font-size: 18px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
-  <div class="container" id="info-section" style="display:none;">
-    <h2>🚨 Penalty Notice</h2>
-    <p><strong>Complaint ID:</strong> <span id="cid"></span></p>
-    <p><strong>Name:</strong> <span id="name"></span></p>
-    <p><strong>Violation:</strong> <span id="type"></span></p>
-    <p><strong>Amount:</strong> ₹<span id="amount"></span></p>
-    <p><strong>Date:</strong> <span id="date"></span></p>
-  </div>
-
-  <div class="container error" id="error-section" style="display:none;">
-    ⚠️ Error: Could not fetch penalty info.
+  <div class="container">
+    <h2>Penalty Details</h2>
+    <div id="result" class="data-box">Loading...</div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const cid = params.get("cid");
+    // Helper: Get query string value
+    function getParameterByName(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    const cid = getParameterByName('cid');
+    const resultDiv = document.getElementById('result');
 
     if (!cid) {
-      document.getElementById("error-section").style.display = "block";
+      resultDiv.innerHTML = '<p class="error">❌ No CID provided in URL</p>';
     } else {
-      fetch(`https://yourdomain.com/get_penalty.php?cid=${cid}`) // Change this URL
-        .then(res => res.json())
+      // Update this link with your actual InfinityFree domain
+      const apiURL = `https://deepika112233.epizy.com/get_penalty.php?cid=${cid}`;
+
+      fetch(apiURL)
+        .then(response => response.json())
         .then(data => {
           if (data.success) {
-            document.getElementById("cid").textContent = data.cid;
-            document.getElementById("name").textContent = data.name;
-            document.getElementById("type").textContent = data.type;
-            document.getElementById("amount").textContent = data.amount;
-            document.getElementById("date").textContent = data.date;
-            document.getElementById("info-section").style.display = "block";
+            resultDiv.innerHTML = `
+              <p><strong>Complaint ID:</strong> ${data.cid}</p>
+              <p><strong>Name:</strong> ${data.name}</p>
+              <p><strong>Violation Type:</strong> ${data.type}</p>
+              <p><strong>Amount:</strong> ₹${data.amount}</p>
+              <p><strong>Date:</strong> ${data.date}</p>
+            `;
           } else {
-            document.getElementById("error-section").style.display = "block";
+            resultDiv.innerHTML = `<p class="error">❌ ${data.message || 'No penalty found for this CID'}</p>`;
           }
         })
-        .catch(err => {
-          console.error(err);
-          document.getElementById("error-section").style.display = "block";
+        .catch(error => {
+          resultDiv.innerHTML = `<p class="error">❌ Could not fetch penalty info</p>`;
         });
     }
   </script>
-
 </body>
 </html>
